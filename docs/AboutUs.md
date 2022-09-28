@@ -51,10 +51,10 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 ### James Chiu
 
-<img src="images/jameschiu.jpeg" alt="jameschiu" width="200px">
+<img src="images/zlimez.png" alt="jameschiu" width="200px">
 
 [[github](http://github.com/zlimez)]
-[[portfolio](team/jameschiu.md)]
+[[portfolio](team/zlimez.md)]
 
 * Role: Developer
 * Responsibilities: Model + Documentation
