@@ -51,3 +51,4 @@ public class DeleteCustomerCommand extends Command {
                 && targetIndex.equals(((DeleteCustomerCommand) other).targetIndex)); // state check
     }
 }
+
