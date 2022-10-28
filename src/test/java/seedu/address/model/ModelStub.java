@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.util.Pair;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.ObservableObject;
@@ -118,6 +119,11 @@ public class ModelStub implements Model {
 
     @Override
     public ObservableObject<Pair<Customer, FilteredList<Commission>>> getObservableFilteredCommissionList() {
+        throw new AssertionError("This method should not be called.");
+    }
+
+    @Override
+    public ObservableObject<Pair<Customer, SortedList<Commission>>> getObservableSortedFilteredCommissionList() {
         throw new AssertionError("This method should not be called.");
     }
 
