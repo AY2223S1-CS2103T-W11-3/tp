@@ -36,6 +36,11 @@ public class ModelManager implements Model {
     private final ObservableObject<Pair<Customer, FilteredList<Commission>>> observableFilteredCommissions =
             new ObservableObject<>(new Pair<>(null, new FilteredList<>(
                     observableUniqueCommissions.getValue().getValue().asUnmodifiableObservableList())));
+    // If selectedCustomer remains as the last selected customer after a universe query is made, UI will not update
+    // for any subsequent addcom command since reference to the customer's commission list is replaced by the
+    // commissionsUniverse. How to bridge this gap smoothly? Explicit command or automated link back (when?)
+    private final Pair<Customer, UniqueCommissionList> commissionsUniverse = new Pair<>(null,
+            new UniqueCommissionList());
     private final ObservableObject<Customer> selectedCustomer = new ObservableObject<>();
     private final ObservableObject<Commission> selectedCommission = new ObservableObject<>();
 
@@ -220,6 +225,43 @@ public class ModelManager implements Model {
     public void updateFilteredCommissionList(Predicate<Commission> predicate) {
         requireAllNonNull(getFilteredCommissionList(), predicate);
         getFilteredCommissionList().setPredicate(predicate);
+    }
+
+    //=========== Filtered Commission List Statistic Aggregator ==================================================
+    @Override
+    public Double getTotalRevenue() {
+        double revenue = 0;
+        for (Commission commission : observableFilteredCommissions.getValue().getValue()) {
+            revenue += commission.getFee().fee;
+        }
+        return revenue;
+    }
+
+    //=========== Commission Universe =======================================================
+    @Override
+    public void addCommissionToUniverse(Commission commission) {
+        addressBook.addCommissionToUniverse(commission);
+    }
+
+    @Override
+    public void removeCommissionFromUniverse(Commission commission) {
+        addressBook.removeCommissionFromUniverse(commission);
+    }
+
+    @Override
+    public void setCommissionInUniverse(Commission oldCommission, Commission editedCommission) {
+        addressBook.setCommissionInUniverse(oldCommission, editedCommission);
+    }
+
+    // Must be invoked after all data has been initialized.
+    @Override
+    public void initCommissionUniverse() {
+        addressBook.initCommissionUniverse();
+    }
+
+    @Override
+    public void specialUpdateCommissionList() {
+        observableUniqueCommissions.setValue(new Pair<>(null, addressBook.getAllCommissions()));
     }
 
     //=========== Selected Customer =============================================================
