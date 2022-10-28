@@ -36,6 +36,10 @@ public class ModelManager implements Model {
     private final ObservableObject<Pair<Customer, FilteredList<Commission>>> observableFilteredCommissions =
             new ObservableObject<>(new Pair<>(null,
                     new FilteredList<>(observableUniqueCommissions.getValue().getValue())));
+    private final ObservableObject<Pair<Customer, SortedList<Commission>>> observableSortedFilteredCommissions =
+            new ObservableObject<>(new Pair<>(null,
+                    new SortedList<>(observableFilteredCommissions.getValue().getValue(),
+                            DEFAULT_COMMISSION_COMPARATOR)));
     private final ObservableObject<Customer> selectedCustomer = new ObservableObject<>();
     private final ObservableObject<Commission> selectedCommission = new ObservableObject<>();
 
@@ -57,6 +61,11 @@ public class ModelManager implements Model {
         sortedFilteredCustomers.setComparator(CUSTOMER_NAME_COMPARATOR);
 
         setSelectedCustomerCommissions(null);
+
+        observableFilteredCommissions.addListener((observableFilteredCommissions, oldList, newList) ->
+                observableSortedFilteredCommissions.setValue(new Pair<>(
+                        newList.getKey(),
+                        new SortedList<>(newList.getValue(), DEFAULT_COMMISSION_COMPARATOR))));
 
         // Makes observableFilteredCommissions reflect to the current observableUniqueCommissions list.
         observableUniqueCommissions.addListener((observableUniqueCommissions, oldList, newList) ->
@@ -248,6 +257,11 @@ public class ModelManager implements Model {
     @Override
     public ObservableObject<Pair<Customer, FilteredList<Commission>>> getObservableFilteredCommissionList() {
         return observableFilteredCommissions;
+    }
+
+    @Override
+    public ObservableObject<Pair<Customer, SortedList<Commission>>>getObservableSortedFilteredCommissionList() {
+        return observableSortedFilteredCommissions;
     }
 
     @Override

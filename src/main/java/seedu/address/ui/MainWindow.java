@@ -146,7 +146,7 @@ public class MainWindow extends UiPart<Stage> {
         customerDetailsPane = new CustomerDetailsPane(logic.getSelectedCustomer());
         customerDetailsPanePlaceholder.getChildren().add(customerDetailsPane.getRoot());
 
-        commissionListPanel = new CommissionListPanel(logic.getObservableFilteredCommissionList(),
+        commissionListPanel = new CommissionListPanel(logic.getObservableSortedFilteredCommissionList(),
                 logic::selectCommission, logic.getSelectedCommission(), this::addChildWindow, this::executeCommand);
         commissionListPanelPlaceholder.getChildren().add(commissionListPanel.getRoot());
 

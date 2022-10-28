@@ -4,6 +4,7 @@ import java.nio.file.Path;
 
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.util.Pair;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.ObservableObject;
@@ -37,6 +38,9 @@ public interface Logic {
 
     /** Returns an unmodifiable view of the sorted and filtered list of customers */
     ObservableList<Customer> getSortedFilteredCustomerList();
+
+    /** Returns an unmodifiable view of the sorted and filtered list of commissions */
+    ObservableObject<Pair<Customer, SortedList<Commission>>> getObservableSortedFilteredCommissionList();
 
     /**
      * Returns an unmodifiable view of the filtered list of commission

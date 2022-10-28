@@ -19,7 +19,7 @@ import seedu.address.model.tag.Tag;
  * Represents a Commission in ArtBuddy.
  * Guarantees: except description, all details are present and not null, field values are validated, immutable.
  */
-public class Commission {
+public class Commission implements Comparable<Commission> {
     private static final UniqueCommissionList allCommissions = new UniqueCommissionList();
 
     // Identity fields
@@ -248,6 +248,14 @@ public class Commission {
             tags.forEach(builder::append);
         }
         return builder.toString();
+    }
+
+    @Override
+    public int compareTo(Commission otherCommission) {
+        if (this.completionStatus.compareTo(otherCommission.completionStatus) == 0) {
+            return this.deadline.compareTo(otherCommission.deadline);
+        }
+        return this.completionStatus.compareTo(otherCommission.completionStatus);
     }
 
     public static void addCommission(Commission commission) {

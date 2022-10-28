@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.util.Pair;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
@@ -78,6 +79,11 @@ public class LogicManager implements Logic {
     @Override
     public ObservableObject<Pair<Customer, FilteredList<Commission>>> getObservableFilteredCommissionList() {
         return model.getObservableFilteredCommissionList();
+    }
+
+    @Override
+    public ObservableObject<Pair<Customer, SortedList<Commission>>> getObservableSortedFilteredCommissionList() {
+        return model.getObservableSortedFilteredCommissionList();
     }
 
     @Override

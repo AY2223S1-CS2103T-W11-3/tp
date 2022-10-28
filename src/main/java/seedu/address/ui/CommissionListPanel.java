@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -33,7 +33,7 @@ public class CommissionListPanel extends UiPart<Region> {
     /**
      * Creates a {@code CommissionListPanel} with the given {@code ObservableList}.
      */
-    public CommissionListPanel(ObservableObject<Pair<Customer, FilteredList<Commission>>> observableCommissionList,
+    public CommissionListPanel(ObservableObject<Pair<Customer, SortedList<Commission>>> observableCommissionList,
                                Consumer<Commission> selectCommission,
                                ObservableObject<Commission> selectedCommission,
                                Consumer<UiPart<Stage>> addChildWindow,

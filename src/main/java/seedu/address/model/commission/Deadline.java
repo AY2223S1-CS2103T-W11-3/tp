@@ -8,7 +8,7 @@ import java.time.LocalDate;
  * Represents a Commission's name in the address book.
  * Guarantees: immutable;
  */
-public class Deadline {
+public class Deadline implements Comparable<Deadline> {
 
     public final LocalDate deadline;
 
@@ -38,4 +38,8 @@ public class Deadline {
         return deadline.hashCode();
     }
 
+    @Override
+    public int compareTo(Deadline otherDeadline) {
+        return this.deadline.compareTo(otherDeadline.deadline);
+    }
 }

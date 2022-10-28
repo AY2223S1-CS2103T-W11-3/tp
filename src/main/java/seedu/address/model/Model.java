@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.util.Pair;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.ObservableObject;
@@ -53,6 +54,7 @@ public interface Model {
      */
     Comparator<Customer> CUSTOMER_LAST_DATE_COMPARATOR = Comparator.comparing(Customer::getLastDate);
 
+    Comparator<Commission> DEFAULT_COMMISSION_COMPARATOR = Commission::compareTo;
 
 
     /**
@@ -175,6 +177,11 @@ public interface Model {
      * Returns an observable instance of the current filtered list of {@code Commission}
      */
     ObservableObject<Pair<Customer, FilteredList<Commission>>> getObservableFilteredCommissionList();
+
+    /**
+     * Returns an observable instance of the current filtered list of {@code Commission}
+     */
+    ObservableObject<Pair<Customer, SortedList<Commission>>> getObservableSortedFilteredCommissionList();
 
     /**
      * Updates the filter of the current filtered commission list to filter by the given {@code predicate}.

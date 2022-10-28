@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
  * Represents a Commission's completion status in the address book.
  * Guarantees: immutable.
  */
-public class CompletionStatus {
+public class CompletionStatus implements Comparable<CompletionStatus> {
     public static final String MESSAGE_CONSTRAINTS = "The commission completion status provided is invalid";
     private static final Pattern TRUE_REGEX = Pattern.compile("\\AT|TRUE|YES|Y\\z", Pattern.CASE_INSENSITIVE);
     private static final Pattern FALSE_REGEX = Pattern.compile("\\AF|FALSE|NO|N\\z", Pattern.CASE_INSENSITIVE);
@@ -55,5 +55,20 @@ public class CompletionStatus {
     @Override
     public int hashCode() {
         return Objects.hashCode(isCompleted);
+    }
+
+    @Override
+    public int compareTo(CompletionStatus otherStatus) {
+        if (this.isCompleted) {
+            if (otherStatus.isCompleted) {
+                return 0;
+            }
+            return 1;
+        } else {
+            if (otherStatus.isCompleted) {
+                return -1;
+            }
+            return 0;
+        }
     }
 }
