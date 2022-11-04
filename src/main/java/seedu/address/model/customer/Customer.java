@@ -90,6 +90,27 @@ public class Customer {
     }
 
     /**
+     * Returns the total number of completed commissions made by this customer.
+     */
+    public long getCompletedCommissionCount() {
+        return commissions.getCompletedSize();
+    }
+
+    /**
+     * Returns the total number of commissions that are in progress made by this customer.
+     */
+    public long getInProgressCommissionCount() {
+        return commissions.getInProgressSize();
+    }
+
+    /**
+     * Returns the total number of commissions that are not started made by this customer.
+     */
+    public long getNotStartedCommissionCount() {
+        return commissions.getNotStartedSize();
+    }
+
+    /**
      * Get last date of customer's commissions.
      */
     public LocalDate getLastDate() {
@@ -98,10 +119,6 @@ public class Customer {
 
     public boolean hasTag(Tag tag) {
         return tags.contains(tag);
-    }
-
-    public UniqueCommissionList getCommissions() {
-        return commissions;
     }
 
     public ObservableList<Commission> getCommissionList() {
@@ -189,7 +206,7 @@ public class Customer {
             && otherCustomer.getEmail().equals(getEmail())
             && otherCustomer.getAddress().equals(getAddress())
             && otherCustomer.getTags().equals(getTags())
-            && otherCustomer.getCommissions().equals(getCommissions());
+            && otherCustomer.commissions.equals(commissions);
     }
 
     @Override
@@ -254,7 +271,7 @@ public class Customer {
         /**
          * Sets commissions and returns itself.
          */
-        public CustomerBuilder setCommissions(UniqueCommissionList commissions) {
+        public CustomerBuilder setCommissions(ObservableList<Commission> commissions) {
             requireNonNull(commissions);
             this.commissions.setCommissions(commissions);
             return this;

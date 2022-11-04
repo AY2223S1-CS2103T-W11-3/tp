@@ -1,7 +1,9 @@
 package seedu.address.model;
 
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
@@ -30,7 +32,8 @@ public interface Model {
     /**
      * {@code Comparator} that sorts by name
      */
-    Comparator<Customer> CUSTOMER_NAME_COMPARATOR = Comparator.comparing(Customer::getName);
+    Comparator<Customer> CUSTOMER_NAME_COMPARATOR = Comparator.comparing(
+            customer -> customer.getName().fullName.toLowerCase());
 
     /**
      * {@code Comparator} that sorts by number of commissions
@@ -51,9 +54,8 @@ public interface Model {
     /**
      * {@code Comparator} that sorts by the customer's latest commission
      */
-    Comparator<Customer> CUSTOMER_LAST_DATE_COMPARATOR = Comparator.comparing(Customer::getLastDate);
-
-
+    Comparator<Customer> CUSTOMER_LAST_DATE_COMPARATOR = Comparator.comparing(
+            customer -> Optional.ofNullable(customer.getLastDate()).orElse(LocalDate.MIN));
 
     /**
      * Returns the user prefs.
@@ -143,6 +145,28 @@ public interface Model {
      */
     void updateSortedCustomerList(Comparator<Customer> comparator);
 
+
+
+    /**
+     * Adds commission to specified customer.
+     */
+    void addCommission(Customer customer, Commission commission);
+
+    /**
+     * Replaces the given commission {@code target} in the customer's commission list with {@code editedCommission}.
+     * {@code target} must exist in the address book.
+     * The commission identity of {@code editedCommission} must not be the same as another existing commission in the
+     * customer's commission list.
+     */
+    void setCommission(Customer customer, Commission target, Commission editedCommission);
+
+
+    /**
+     * Removes {@code key} from this {@code Customer}.
+     * {@code key} must exist in the customer's commission list.
+     */
+    void removeCommission(Customer customer, Commission key);
+
     /**
      * Returns an unmodifiable view of the list of {@code Commission} backed by the internal list of
      * {@code versionedAddressBook}
@@ -165,16 +189,6 @@ public interface Model {
      * Returns the aggregate sum of fees from all the commissions in the @code observableFilteredCommissions
      */
     Double getTotalRevenue();
-
-    void addCommissionToUniverse(Commission commission);
-
-    void removeCommissionFromUniverse(Commission commission);
-
-    void setCommissionInUniverse(Commission oldCommission, Commission editedCommission);
-
-    void initCommissionUniverse();
-
-    void specialUpdateCommissionList();
 
     boolean hasSelectedCustomer();
 

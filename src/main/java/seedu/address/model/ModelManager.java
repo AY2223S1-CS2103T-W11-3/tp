@@ -31,16 +31,11 @@ public class ModelManager implements Model {
     private final UserPrefs userPrefs;
     private final SortedList<Customer> sortedFilteredCustomers;
     private final FilteredList<Customer> filteredCustomers;
-    private final ObservableObject<Pair<Customer, UniqueCommissionList>> observableUniqueCommissions =
-            new ObservableObject<>(new Pair<>(null, new UniqueCommissionList()));
+    private final ObservableObject<Pair<Customer, ObservableList<Commission>>> observableUniqueCommissions =
+            new ObservableObject<>(new Pair<>(null, new UniqueCommissionList().asUnmodifiableObservableList()));
     private final ObservableObject<Pair<Customer, FilteredList<Commission>>> observableFilteredCommissions =
-            new ObservableObject<>(new Pair<>(null, new FilteredList<>(
-                    observableUniqueCommissions.getValue().getValue().asUnmodifiableObservableList())));
-    // If selectedCustomer remains as the last selected customer after a universe query is made, UI will not update
-    // for any subsequent addcom command since reference to the customer's commission list is replaced by the
-    // commissionsUniverse. How to bridge this gap smoothly? Explicit command or automated link back (when?)
-    private final Pair<Customer, UniqueCommissionList> commissionsUniverse = new Pair<>(null,
-            new UniqueCommissionList());
+            new ObservableObject<>(new Pair<>(null,
+                    new FilteredList<>(observableUniqueCommissions.getValue().getValue())));
     private final ObservableObject<Customer> selectedCustomer = new ObservableObject<>();
     private final ObservableObject<Commission> selectedCommission = new ObservableObject<>();
 
@@ -67,7 +62,7 @@ public class ModelManager implements Model {
         observableUniqueCommissions.addListener((observableUniqueCommissions, oldList, newList) ->
                 observableFilteredCommissions.setValue(new Pair<>(
                         newList.getKey(),
-                        new FilteredList<>(newList.getValue().asUnmodifiableObservableList()))));
+                        new FilteredList<>(newList.getValue()))));
 
 
         // selectedCustomerCommissions is tied to the selectedCustomer,
@@ -94,10 +89,11 @@ public class ModelManager implements Model {
     }
 
     private void setSelectedCustomerCommissions(Customer customer) {
-        Pair<Customer, UniqueCommissionList> commissionsList = customer == null
-                ? new Pair<>(null, new UniqueCommissionList())
-                : new Pair<>(customer, customer.getCommissions());
+        Pair<Customer, ObservableList<Commission>> commissionsList = customer == null
+                ? new Pair<>(null, addressBook.getFullCommissionList())
+                : new Pair<>(customer, customer.getCommissionList());
         observableUniqueCommissions.setValue(commissionsList);
+        selectCommission(null);
     }
 
     //=========== UserPrefs ==================================================================================
@@ -153,6 +149,8 @@ public class ModelManager implements Model {
     @Override
     public void setAddressBook(ReadOnlyAddressBook addressBook) {
         this.addressBook.resetData(addressBook);
+        selectedCustomer.setValue(null);
+        selectedCommission.setValue(null);
     }
 
     @Override
@@ -177,6 +175,37 @@ public class ModelManager implements Model {
         requireAllNonNull(target, editedCustomer);
         addressBook.setCustomer(target, editedCustomer);
     }
+
+    /**
+     * Adds commission to specified customer.
+     *
+     * @param commission new commission to add.
+     */
+    public void addCommission(Customer customer, Commission commission) {
+        requireAllNonNull(customer, commission);
+        addressBook.addCommission(customer, commission);
+    }
+
+    /**
+     * Replaces the given commission {@code target} in the customer's commission list with {@code editedCommission}.
+     * {@code target} must exist in the address book.
+     * The commission identity of {@code editedCommission} must not be the same as another existing commission in the
+     * customer's commission list.
+     */
+    public void setCommission(Customer customer, Commission target, Commission editedCommission) {
+        addressBook.setCommission(customer, target, editedCommission);
+    }
+
+
+    /**
+     * Removes {@code key} from this {@code Customer}.
+     * {@code key} must exist in the customer's commission list.
+     */
+    public void removeCommission(Customer customer, Commission key) {
+        addressBook.removeCommission(customer, key);
+    }
+
+
 
     //=========== Filtered Customer List Accessors =============================================================
 
@@ -235,33 +264,6 @@ public class ModelManager implements Model {
             revenue += commission.getFee().fee;
         }
         return revenue;
-    }
-
-    //=========== Commission Universe =======================================================
-    @Override
-    public void addCommissionToUniverse(Commission commission) {
-        addressBook.addCommissionToUniverse(commission);
-    }
-
-    @Override
-    public void removeCommissionFromUniverse(Commission commission) {
-        addressBook.removeCommissionFromUniverse(commission);
-    }
-
-    @Override
-    public void setCommissionInUniverse(Commission oldCommission, Commission editedCommission) {
-        addressBook.setCommissionInUniverse(oldCommission, editedCommission);
-    }
-
-    // Must be invoked after all data has been initialized.
-    @Override
-    public void initCommissionUniverse() {
-        addressBook.initCommissionUniverse();
-    }
-
-    @Override
-    public void specialUpdateCommissionList() {
-        observableUniqueCommissions.setValue(new Pair<>(null, addressBook.getAllCommissions()));
     }
 
     //=========== Selected Customer =============================================================
