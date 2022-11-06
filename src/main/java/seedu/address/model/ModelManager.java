@@ -42,6 +42,8 @@ public class ModelManager implements Model {
 
     private GuiTab selectedTab = GuiTab.CUSTOMER;
 
+    private Comparator<Customer> customerComparator = CUSTOMER_NAME_COMPARATOR;
+
     /**
      * Initializes a ModelManager with the given addressBook and userPrefs.
      */
@@ -232,6 +234,7 @@ public class ModelManager implements Model {
     @Override
     public void updateSortedCustomerList(Comparator<Customer> comparator) {
         requireNonNull(comparator);
+        this.customerComparator = comparator;
         sortedFilteredCustomers.setComparator(comparator);
     }
 
@@ -259,6 +262,7 @@ public class ModelManager implements Model {
                 .noneMatch(selectedCommission.getValue()::isSameCommission)) {
             selectCommission(getFilteredCommissionList().get(0));
         }
+        updateSortedCustomerList(customerComparator);
     }
 
     //=========== Filtered Commission List Statistic Aggregator ==================================================
