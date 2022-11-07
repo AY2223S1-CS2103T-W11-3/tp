@@ -43,6 +43,10 @@ public class FindCommissionCommandParser implements Parser<FindCommissionCommand
         if (rawKeywords.stream().anyMatch(keyword -> Objects.equals(keyword.strip(), ""))) {
             throw new ParseException(MESSAGE_KEYWORD_EMPTY);
         }
+        if (rawKeywords.stream().anyMatch(keyword -> keyword.strip().contains(" "))) {
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                    FindCommissionCommand.MESSAGE_USAGE));
+        }
 
         Set<String> keywords = new HashSet<>(rawKeywords);
         Set<Tag> intersectTags = new HashSet<>();

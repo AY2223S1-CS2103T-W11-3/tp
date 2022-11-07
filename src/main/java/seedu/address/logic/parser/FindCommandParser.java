@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import seedu.address.logic.commands.FindCommand;
+import seedu.address.logic.commands.FindCommissionCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.commission.CompositeCustomerPredicate;
 import seedu.address.model.tag.Tag;
@@ -40,6 +41,12 @@ public class FindCommandParser implements Parser<FindCommand> {
         if (rawKeywords.stream().anyMatch(keyword -> Objects.equals(keyword.strip(), ""))) {
             throw new ParseException(MESSAGE_KEYWORD_EMPTY);
         }
+
+        if (rawKeywords.stream().anyMatch(keyword -> keyword.strip().contains(" "))) {
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                FindCommissionCommand.MESSAGE_USAGE));
+        }
+
         Set<String> keywords = new HashSet<>(rawKeywords);
         Set<Tag> intersectTags = new HashSet<>();
         Set<Tag> unionTags = new HashSet<>();
