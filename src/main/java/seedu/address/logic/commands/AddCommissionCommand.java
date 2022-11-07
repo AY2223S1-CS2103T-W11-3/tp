@@ -7,6 +7,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_STATUS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TITLE;
+import static seedu.address.model.Model.PREDICATE_SHOW_ALL_COMMISSIONS;
 
 import seedu.address.commons.core.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -67,6 +68,8 @@ public class AddCommissionCommand extends Command {
         model.addCommission(selectedCustomer, newCommission);
         model.selectTab(GuiTab.COMMISSION);
         model.selectCommission(newCommission);
+        model.updateFilteredCommissionList(PREDICATE_SHOW_ALL_COMMISSIONS);
+
         return new CommandResult(String.format(MESSAGE_SUCCESS, toAdd));
     }
 

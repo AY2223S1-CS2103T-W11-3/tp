@@ -1,7 +1,6 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.model.Model.PREDICATE_SHOW_ALL_COMMISSIONS;
 
 import java.util.List;
 
@@ -47,7 +46,6 @@ public class DeleteCommissionCommand extends Command {
         Customer customer = commissionToDelete.getCustomer();
         model.removeCommission(customer, commissionToDelete);
         model.selectTab(GuiTab.COMMISSION);
-        model.updateFilteredCommissionList(PREDICATE_SHOW_ALL_COMMISSIONS);
         if (selectedCommission != null && !selectedCommission.isSameCommission(commissionToDelete)) {
             model.selectCommission(selectedCommission);
         } else {

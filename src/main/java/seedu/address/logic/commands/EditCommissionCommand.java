@@ -7,7 +7,6 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_STATUS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TITLE;
-import static seedu.address.model.Model.PREDICATE_SHOW_ALL_COMMISSIONS;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -127,7 +126,6 @@ public class EditCommissionCommand extends Command {
         model.setCommission(selectedCustomer, commissionToEdit, editedCommission);
         model.selectCommission(editedCommission);
 
-        model.updateFilteredCommissionList(PREDICATE_SHOW_ALL_COMMISSIONS);
         model.selectTab(GuiTab.COMMISSION);
         return new CommandResult(String.format(MESSAGE_EDIT_COMMISSION_SUCCESS, editedCommission));
     }
