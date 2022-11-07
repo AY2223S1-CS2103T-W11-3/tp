@@ -4,6 +4,7 @@ import static seedu.address.commons.core.Messages.MESSAGE_INVALID_COMMAND_FORMAT
 import static seedu.address.logic.parser.CliSyntax.PREFIX_KEYWORD;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,69 +28,60 @@ public class FindCommandParser implements Parser<FindCommand> {
      * @throws ParseException if the user input does not conform the expected format
      */
     public FindCommand parse(String args) throws ParseException {
-        String trimmedArgs = args.trim();
-        int intersectTagsGroupStart = trimmedArgs.indexOf(INTERSECT_FLAG);
-        int intersectTagsContentStart = intersectTagsGroupStart + 4;
-        int unionTagsGroupStart = trimmedArgs.indexOf(UNION_FLAG);
-        int unionTagsContentStart = unionTagsGroupStart + 4;
-
-        String rawKeywords = "";
-        String rawIntersectTags = "";
-        String rawUnionTags = "";
-
-        // Improve readability only
-        String possibleRawUnionTags = unionTagsContentStart >= trimmedArgs.length() ? ""
-                : trimmedArgs.substring(unionTagsContentStart).trim();
-
+        args = " " + args;
+        List<FlagAndPosition> flagPositions = new ArrayList<>();
+        int intersectTagsGroupStart = args.indexOf(INTERSECT_FLAG);
         if (intersectTagsGroupStart != -1) {
-            rawKeywords = trimmedArgs.substring(0, intersectTagsGroupStart).trim();
-            if (unionTagsGroupStart != -1) {
-                rawIntersectTags = trimmedArgs.substring(intersectTagsGroupStart + 4, unionTagsGroupStart);
-                rawUnionTags = possibleRawUnionTags;
-            } else {
-                rawIntersectTags = intersectTagsContentStart >= trimmedArgs.length() ? ""
-                        : trimmedArgs.substring(intersectTagsContentStart).trim();
-            }
-        } else {
-            if (unionTagsGroupStart != -1) {
-                rawKeywords = trimmedArgs.substring(0, unionTagsGroupStart).trim();
-                rawUnionTags = possibleRawUnionTags;
-            } else {
-                rawKeywords = trimmedArgs;
-            }
+            flagPositions.add(new FlagAndPosition(INTERSECT_FLAG, PREFIX_TAG, intersectTagsGroupStart));
         }
+        int unionTagsGroupStart = args.indexOf(UNION_FLAG);
+        if (unionTagsGroupStart != -1) {
+            flagPositions.add(new FlagAndPosition(UNION_FLAG, PREFIX_TAG, unionTagsGroupStart));
+        }
+        flagPositions.sort(FlagAndPosition::compareTo);
 
         Set<String> keywords = new HashSet<>();
         Set<Tag> intersectTags = new HashSet<>();
         Set<Tag> unionTags = new HashSet<>();
-        if (!rawKeywords.isEmpty()) {
-            // Whitespace required for tokenize()
-            rawKeywords = " " + rawKeywords;
-            ArgumentMultimap argMultimap =
-                    ArgumentTokenizer.tokenize(rawKeywords, PREFIX_KEYWORD);
-            List<String> givenKeywords = argMultimap.getAllValues(PREFIX_KEYWORD);
-            for (String givenKeyword : givenKeywords) {
-                if (givenKeyword.isBlank()) {
-                    throw new ParseException(Messages.MESSAGE_KEYWORD_EMPTY);
-                }
-                keywords.add(givenKeyword);
+
+        ArgumentMultimap keywordMap;
+        if (flagPositions.isEmpty()) {
+            keywordMap = ArgumentTokenizer.tokenize(args, PREFIX_KEYWORD);
+        } else {
+            keywordMap = ArgumentTokenizer.tokenize(
+                    args.substring(0, flagPositions.get(0).getPosition()), PREFIX_KEYWORD);
+        }
+
+        List<String> givenKeywords = keywordMap.getAllValues(PREFIX_KEYWORD);
+        for (String givenKeyword : givenKeywords) {
+            if (givenKeyword.isBlank()) {
+                throw new ParseException(Messages.MESSAGE_KEYWORD_EMPTY);
             }
+            keywords.add(givenKeyword);
         }
 
-        if (!rawIntersectTags.isEmpty()) {
-            rawIntersectTags = " " + rawIntersectTags;
-            ArgumentMultimap argMultimap =
-                    ArgumentTokenizer.tokenize(rawIntersectTags, PREFIX_TAG);
-            Set<Tag> givenIntersectTags = ParserUtil.parseTags(argMultimap.getAllValues(PREFIX_TAG));
-            intersectTags.addAll(givenIntersectTags);
-        }
+        for (int i = 0; i < flagPositions.size(); i++) {
+            FlagAndPosition currFlag = flagPositions.get(i);
+            // Last element
+            ArgumentMultimap argMap;
+            if (i == flagPositions.size() - 1) {
+                argMap = ArgumentTokenizer.tokenize(
+                        args.substring(currFlag.getPosition()), currFlag.getToken());
+            } else {
+                FlagAndPosition nextFlag = flagPositions.get(i + 1);
+                argMap = ArgumentTokenizer.tokenize(
+                        args.substring(currFlag.getPosition(), nextFlag.getPosition()), currFlag.getToken());
+            }
 
-        if (!rawUnionTags.isEmpty()) {
-            rawUnionTags = " " + rawUnionTags;
-            ArgumentMultimap argMultimap =
-                    ArgumentTokenizer.tokenize(rawUnionTags, PREFIX_TAG);
-            Set<Tag> givenUnionTags = ParserUtil.parseTags(argMultimap.getAllValues(PREFIX_TAG));
-            unionTags.addAll(givenUnionTags);
+            if (currFlag.getFlag().equals(INTERSECT_FLAG)) {
+                Set<Tag> givenIntersectTags = ParserUtil.parseTags(argMap.getAllValues(currFlag.getToken()));
+                intersectTags.addAll(givenIntersectTags);
+            } else if (currFlag.getFlag().equals(UNION_FLAG)) {
+                Set<Tag> givenUnionTags = ParserUtil.parseTags(argMap.getAllValues(currFlag.getToken()));
+                unionTags.addAll(givenUnionTags);
+            } else {
+                throw new Error("Code should be unreachable");
+            }
         }
 
         if (keywords.isEmpty() && intersectTags.isEmpty() && unionTags.isEmpty()) {
@@ -99,5 +91,4 @@ public class FindCommandParser implements Parser<FindCommand> {
 
         return new FindCommand(new CompositeCustomerPredicate(keywords, intersectTags, unionTags));
     }
-
 }
