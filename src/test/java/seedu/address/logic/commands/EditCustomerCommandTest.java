@@ -95,6 +95,7 @@ public class EditCustomerCommandTest {
         String expectedMessage = String.format(EditCustomerCommand.MESSAGE_EDIT_CUSTOMER_SUCCESS, editedCustomer);
 
         Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        showCustomerAtIndex(expectedModel, INDEX_FIRST);
         expectedModel.setCustomer(model.getSortedFilteredCustomerList().get(0), editedCustomer);
 
         assertCommandSuccess(editCustomerCommand, model, expectedMessage, expectedModel);

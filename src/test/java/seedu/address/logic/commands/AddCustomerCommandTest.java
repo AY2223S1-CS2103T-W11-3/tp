@@ -7,6 +7,7 @@ import static seedu.address.testutil.Assert.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 
@@ -122,6 +123,15 @@ public class AddCustomerCommandTest {
         @Override
         public void selectCustomer(Customer customer) {
             selectedCustomer.setValue(customer);
+        }
+
+        @Override
+        public void updateFilteredCustomerList(Predicate<Customer> predicate) {
+            // This particular predicate would have no effect at all to the array list, so we can allow it to be called.
+            if (!predicate.equals(PREDICATE_SHOW_ALL_CUSTOMERS)) {
+                throw new AssertionError(
+                        "This method should not be called unless it is for all customers.");
+            }
         }
     }
 
